@@ -88,7 +88,14 @@ class _HomeState extends State<Home> {
         isLoading = false;
       });
     } catch (e) {
-      var result = [Pokemon(id: 1,name: 'Bulbasaur',type: 'Grass',description: ' ',url: 'https://via.placeholder.com/60x60'),];
+      var result = [
+        Pokemon(
+            id: 1,
+            name: 'Bulbasaur',
+            type: 'Grass',
+            description: ' ',
+            url: 'https://via.placeholder.com/60x60'),
+      ];
       pokemons = result;
       suggestions = result.take(20).toList();
       for (int i = 0; i < result.length; i++) {
@@ -329,7 +336,8 @@ class _HomeState extends State<Home> {
                             fontSize: 15,
                           ),
                           border: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white ,width: 1.0),
+                            borderSide:
+                                BorderSide(color: Colors.white, width: 1.0),
                             borderRadius:
                                 BorderRadius.all(Radius.circular(12.0)),
                           ),
@@ -364,8 +372,7 @@ class _HomeState extends State<Home> {
                                   height: 0,
                                 ),
                                 isDense: true,
-                                dropdownColor:
-                                    Colors.black,
+                                dropdownColor: Colors.black,
                                 hint: Text(
                                   " Select Type",
                                   style: TextStyle(
@@ -485,6 +492,7 @@ class _HomeState extends State<Home> {
                                       Stack(
                                         children: [
                                           Container(
+                                            padding: EdgeInsets.all(10.0),
                                             child: Image.asset(
                                                 "assets/images/card1.png"),
                                           ),
@@ -494,76 +502,130 @@ class _HomeState extends State<Home> {
                                               children: [
                                                 Row(
                                                   children: [
-                                                    SizedBox(width: size.height/17,),
+                                                    SizedBox(
+                                                      width: size.height / 17,
+                                                    ),
                                                     Opacity(
                                                       opacity: 1.0,
                                                       child: Container(
-                                                        margin: const EdgeInsets.all(8.0),
-                                                        width: size.height/2.2,
-                                                        height: size.height/3.5,
+                                                        margin: const EdgeInsets
+                                                            .all(8.0),
+                                                        width:
+                                                            3 * size.width / 4 ,
+                                                        height:
+                                                            size.height / 3.5,
                                                         padding:
-                                                            const EdgeInsets.fromLTRB(
-                                                                18, 14, 8, 18),
-                                                        decoration: BoxDecoration(
-                                                          color:Colors.transparent,
+                                                            const EdgeInsets
+                                                                .fromLTRB(
+                                                                8, 14, 8, 18),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: Colors
+                                                              .transparent,
                                                           borderRadius:
-                                                              BorderRadius.circular(
-                                                                  17.36),
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      17.36),
                                                         ),
                                                         child: Row(
-                                                          mainAxisAlignment:MainAxisAlignment.spaceBetween,
-                                                          crossAxisAlignment:CrossAxisAlignment.start,
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
                                                           children: [
                                                             Column(
                                                               mainAxisAlignment:
                                                                   MainAxisAlignment
                                                                       .spaceEvenly,
                                                               crossAxisAlignment:
-                                                                  CrossAxisAlignment.start,
+                                                                  CrossAxisAlignment
+                                                                      .start,
                                                               children: [
-                                                                Text('#${pokemon.id}',
-                                                                  style: TextStyle(
-                                                                    color: Color(0xFF212121),
-                                                                    fontSize: 25.20,
-                                                                    fontFamily: 'Futura BdCn BT',
-                                                                    fontWeight: FontWeight.bold,
-                                                                    height: 0.03,
-                                                                    letterSpacing: -0.55,
-                                                                  ),),
+                                                                Text(
+                                                                  '#${pokemon.id}',
+                                                                  style:
+                                                                      TextStyle(
+                                                                    color: Color(
+                                                                        0xFF212121),
+                                                                    fontSize:
+                                                                        25.20,
+                                                                    fontFamily:
+                                                                        'Futura BdCn BT',
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    height:
+                                                                        0.03,
+                                                                    letterSpacing:
+                                                                        -0.55,
+                                                                  ),
+                                                                ),
                                                                 Text(
                                                                   '${pokemon.name.toUpperCase()}',
-                                                                  style: TextStyle(
-                                                                    color: Color(0xFF212121),
-                                                                    fontSize: 35.20,
-                                                                    fontFamily: 'Futura',
-                                                                    fontWeight: FontWeight.bold,
-                                                                    height: 0.02,
+                                                                  style:
+                                                                      TextStyle(
+                                                                    color: Color(
+                                                                        0xFF212121),
+                                                                    fontSize:
+                                                                        35.20,
+                                                                    fontFamily:
+                                                                        'Futura',
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    height:
+                                                                        0.02,
                                                                   ),
                                                                 ),
                                                                 Text(
                                                                   '${pokemon.type}',
-                                                                  style: TextStyle(
-                                                                    color: Color(0xFF212121),
-                                                                    fontSize: 25.20,
-                                                                    fontFamily: 'Futura',
-                                                                    fontWeight: FontWeight.bold,
-                                                                    height: 0.02,
+                                                                  style:
+                                                                      TextStyle(
+                                                                    color: Color(
+                                                                        0xFF212121),
+                                                                    fontSize:
+                                                                        25.20,
+                                                                    fontFamily:
+                                                                        'Futura',
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    height:
+                                                                        0.02,
                                                                   ),
                                                                 ),
                                                                 Text(
                                                                   '${pokemon.description}',
-                                                                  style: TextStyle(
-                                                                    color: Color(0xFF212121),
-                                                                    fontSize: 16,
-                                                                    fontFamily: 'Futura',
-                                                                    fontWeight: FontWeight.bold,
-                                                                    height: 0.02,
-                                                                    letterSpacing: -0.55,
+                                                                  style:
+                                                                      TextStyle(
+                                                                    color: Color(
+                                                                        0xFF212121),
+                                                                    fontSize:
+                                                                        16,
+                                                                    fontFamily:
+                                                                        'Futura',
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    height:
+                                                                        0.02,
+                                                                    letterSpacing:
+                                                                        -0.55,
                                                                   ),
                                                                 ),
                                                               ],
                                                             ),
-                                                            Image.asset("assets/images/bulbasaur.png",),
+                                                            SizedBox(width: 5.0,),
+                                                            Container(
+                                                                width:0.35*size.width,
+                                                                child:
+                                                                    Image.asset(
+                                                                  "assets/images/bulbasaur.png",
+                                                                  fit: BoxFit
+                                                                      .fill,
+                                                                )),
                                                           ],
                                                         ),
                                                       ),
