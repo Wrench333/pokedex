@@ -1,4 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:isar/isar.dart';
+import 'package:pokedex_app/data/data_sources/local/isar_service.dart';
 import 'dart:io';
 import 'data/models/pokemon_model.dart';
 import 'data/repositories/pokedex_service.dart';
@@ -51,22 +55,30 @@ class _HomeState extends State<Home> {
   List<String> names = [];
   Set<String> types = {'Select Type'};
   bool isLoading = true;
+  IsarService isarService = IsarService();
 
   String selectedType = '';
 
   @override
   void initState() {
     super.initState();
+    _getLocalData();
     _fetchPokemons();
+  }
+
+  Future<void> _getLocalData() async {
+    pokemons = await isarService.getAllPokemon();
   }
 
   Future<void> _fetchPokemons() async {
     try {
       var result = await pokeAPI.getPokemonList();
       print('Pokemon API Response: $result');
+      isarService.cleanDB();
       pokemons = result;
       suggestions = result.take(20).toList();
       for (int i = 0; i < result.length; i++) {
+        isarService.savePokemon(result[i]);
         names.add(result[i].name);
         types.add(result[i].type);
       }
@@ -76,6 +88,19 @@ class _HomeState extends State<Home> {
         isLoading = false;
       });
     } catch (e) {
+      var result = [Pokemon(id: 1,name: 'Bulbasaur',type: 'Grass',description: ' ',url: 'https://via.placeholder.com/60x60'),];
+      pokemons = result;
+      suggestions = result.take(20).toList();
+      for (int i = 0; i < result.length; i++) {
+        isarService.savePokemon(result[i]);
+        names.add(result[i].name);
+        types.add(result[i].type);
+      }
+      print(suggestions);
+      print(suggestions.length);
+      setState(() {
+        isLoading = false;
+      });
       print('Error in getting pokemon list: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -120,10 +145,18 @@ class _HomeState extends State<Home> {
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        backgroundColor: const Color.fromRGBO(0, 31, 63, 1),
+        backgroundColor: Colors.black,
         body: Stack(
           children: [
-            Positioned(
+            Opacity(
+              opacity: 1,
+              child: Container(
+                  height: size.height,
+                  width: size.width,
+                  child: Image.asset("assets/images/background.png",
+                      fit: BoxFit.fitWidth)),
+            ),
+            /*Positioned(
               bottom: size.height / 3,
               right: 0.0,
               left: 0.0,
@@ -229,7 +262,7 @@ class _HomeState extends State<Home> {
                   ),
                 ],
               ),
-            ),
+            ),*/
             Positioned.fill(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -237,19 +270,11 @@ class _HomeState extends State<Home> {
                 children: [
                   Container(
                     decoration: const BoxDecoration(
-                      color: Color.fromRGBO(0, 31, 63, 1),
+                      color: Colors.transparent,
                       borderRadius: BorderRadius.only(
                         bottomRight: Radius.circular(20.0),
                         bottomLeft: Radius.circular(20.0),
                       ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Color.fromRGBO(25, 25, 112, 1),
-                          spreadRadius: 2,
-                          blurRadius: 2,
-                          offset: Offset(0, 0), // changes position of shadow
-                        ),
-                      ],
                     ),
                     padding: const EdgeInsets.fromLTRB(0, 5.0, 10.0, 0),
                     child: Row(
@@ -275,7 +300,7 @@ class _HomeState extends State<Home> {
                   Padding(
                     padding: const EdgeInsets.fromLTRB(13.0, 14.0, 19.0, 8.0),
                     child: Container(
-                      height: size.height / 16, //TODO: Fix this dynamic shit
+                      height: size.height / 16,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(7.72),
                         boxShadow: const [
@@ -287,18 +312,24 @@ class _HomeState extends State<Home> {
                         ],
                       ),
                       child: TextField(
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
                         controller: controller,
                         onChanged: onQueryChanged,
                         decoration: InputDecoration(
+                          prefixIconColor: Colors.white,
+                          prefixIcon: Icon(Icons.search),
                           filled: true,
-                          fillColor: Color.fromRGBO(65, 105, 225, 1),
+                          fillColor: Colors.black,
                           isDense: true,
-                          hintText: 'Search ...',
+                          hintText: 'Search',
                           hintStyle: TextStyle(
                             color: Colors.white,
                             fontSize: 15,
                           ),
                           border: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white ,width: 1.0),
                             borderRadius:
                                 BorderRadius.all(Radius.circular(12.0)),
                           ),
@@ -313,7 +344,6 @@ class _HomeState extends State<Home> {
                         Expanded(
                           child: Container(
                             height: size.height / 23,
-                            //TODO: Fix this dynamic shit
                             decoration: const BoxDecoration(
                               color: Color.fromRGBO(65, 105, 225, 1),
                               borderRadius: BorderRadius.all(
@@ -335,7 +365,7 @@ class _HomeState extends State<Home> {
                                 ),
                                 isDense: true,
                                 dropdownColor:
-                                    const Color.fromRGBO(65, 105, 225, 1),
+                                    Colors.black,
                                 hint: Text(
                                   " Select Type",
                                   style: TextStyle(
@@ -452,71 +482,98 @@ class _HomeState extends State<Home> {
                                 if (suggestions.contains(pokemon)) {
                                   return Column(
                                     children: [
-                                      Opacity(
-                                        opacity: 1.0,
-                                        //Supposed to be 0.60 acc to figma file but didnt look right
-                                        child: Container(
-                                          margin: const EdgeInsets.all(8.0),
-                                          height: 105,
-                                          padding: const EdgeInsets.fromLTRB(
-                                              23, 18, 8, 18),
-                                          decoration: BoxDecoration(
-                                            color: const Color.fromRGBO(
-                                                52, 152, 219, 0.8),
-                                            borderRadius:
-                                                BorderRadius.circular(17.36),
-                                            boxShadow: const [
-                                              BoxShadow(
-                                                blurRadius: 4,
-                                                color:
-                                                    Color.fromRGBO(0, 0, 0, 1),
-                                                offset: Offset(0, 4),
-                                              ),
-                                            ],
+                                      Stack(
+                                        children: [
+                                          Container(
+                                            child: Image.asset(
+                                                "assets/images/card1.png"),
                                           ),
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                '${pokemon.name}',
-                                                style: const TextStyle(
-                                                  fontSize: 18.0,
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
+                                          Container(
+                                            width: size.width,
+                                            child: Column(
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    SizedBox(width: size.height/17,),
+                                                    Opacity(
+                                                      opacity: 1.0,
+                                                      child: Container(
+                                                        margin: const EdgeInsets.all(8.0),
+                                                        width: size.height/2.2,
+                                                        height: size.height/3.5,
+                                                        padding:
+                                                            const EdgeInsets.fromLTRB(
+                                                                18, 14, 8, 18),
+                                                        decoration: BoxDecoration(
+                                                          color:Colors.transparent,
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                  17.36),
+                                                        ),
+                                                        child: Row(
+                                                          mainAxisAlignment:MainAxisAlignment.spaceBetween,
+                                                          crossAxisAlignment:CrossAxisAlignment.start,
+                                                          children: [
+                                                            Column(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .spaceEvenly,
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment.start,
+                                                              children: [
+                                                                Text('#${pokemon.id}',
+                                                                  style: TextStyle(
+                                                                    color: Color(0xFF212121),
+                                                                    fontSize: 25.20,
+                                                                    fontFamily: 'Futura BdCn BT',
+                                                                    fontWeight: FontWeight.bold,
+                                                                    height: 0.03,
+                                                                    letterSpacing: -0.55,
+                                                                  ),),
+                                                                Text(
+                                                                  '${pokemon.name.toUpperCase()}',
+                                                                  style: TextStyle(
+                                                                    color: Color(0xFF212121),
+                                                                    fontSize: 35.20,
+                                                                    fontFamily: 'Futura',
+                                                                    fontWeight: FontWeight.bold,
+                                                                    height: 0.02,
+                                                                  ),
+                                                                ),
+                                                                Text(
+                                                                  '${pokemon.type}',
+                                                                  style: TextStyle(
+                                                                    color: Color(0xFF212121),
+                                                                    fontSize: 25.20,
+                                                                    fontFamily: 'Futura',
+                                                                    fontWeight: FontWeight.bold,
+                                                                    height: 0.02,
+                                                                  ),
+                                                                ),
+                                                                Text(
+                                                                  '${pokemon.description}',
+                                                                  style: TextStyle(
+                                                                    color: Color(0xFF212121),
+                                                                    fontSize: 16,
+                                                                    fontFamily: 'Futura',
+                                                                    fontWeight: FontWeight.bold,
+                                                                    height: 0.02,
+                                                                    letterSpacing: -0.55,
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                            Image.asset("assets/images/bulbasaur.png",),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
-                                              ),
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Text(
-                                                    'Id: ${pokemon.id}',
-                                                    style: const TextStyle(
-                                                        color: Colors.white),
-                                                  ),
-                                                  Text(
-                                                    'Type: ${pokemon.type}',
-                                                    style: const TextStyle(
-                                                        color: Colors.white),
-                                                  ),
-                                                  const SizedBox(
-                                                    width: 12.0,
-                                                  ),
-                                                ],
-                                              ),
-                                              Text(
-                                                '${pokemon.description}',
-                                                style: const TextStyle(
-                                                  color: Colors.white,
-                                                ),
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
-                                        ),
+                                        ],
                                       ),
                                       const SizedBox(
                                         height: 15.0,

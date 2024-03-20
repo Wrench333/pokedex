@@ -1,15 +1,28 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-
+import 'dart:io';
 import '../models/pokemon_model.dart';
+
+class UserAgentClient extends http.BaseClient {
+  final String userAgent;
+  final http.Client _inner;
+
+  UserAgentClient(this.userAgent, this._inner);
+
+  Future<http.StreamedResponse> send(http.BaseRequest request) {
+    request.headers['user-agent'] = userAgent;
+    return _inner.send(request);
+  }
+}
 
 class PokeAPI {
   String baseUrl = 'https://pokeapi.co/api/v2/';
+  final client = UserAgentClient("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36",http.Client());
 
   Future<List<Pokemon>> getPokemonList() async {
     try {
-      final response = await http
-          .get(Uri.parse(baseUrl + "pokemon/?offset=0&limit=30"));
+      final response = await client
+          .get(Uri.parse(baseUrl + "pokemon/?offset=0&limit=20"),);
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
@@ -30,8 +43,8 @@ class PokeAPI {
 
   Future<Pokemon> getPokemon(String request) async {
     try {
-      final response = await http
-          .get(Uri.parse(baseUrl + "pokemon/$request/"));
+      final response = await client
+          .get(Uri.parse(baseUrl + "pokemon/$request/"),);
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
@@ -50,8 +63,8 @@ class PokeAPI {
 
   Future<String> getPokemonDesc(int id) async {
     try {
-      final response = await http
-          .get(Uri.parse(baseUrl + "characteristic/$id/"));
+      final response = await client
+          .get(Uri.parse(baseUrl + "characteristic/$id/"),);
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);

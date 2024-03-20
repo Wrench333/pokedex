@@ -1,5 +1,10 @@
+import 'package:isar/isar.dart';
+
+part 'pokemon_model.g.dart';
+
+@collection
 class Pokemon {
-  int id;
+  Id id;
   String name;
   String type;
   String description;
